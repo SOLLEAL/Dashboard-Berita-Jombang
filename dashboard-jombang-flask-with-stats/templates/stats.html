@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Statistik Berita</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    .chart-container { width: 90%; margin: auto; }
+  </style>
+</head>
+<body>
+  <h2>📊 Statistik Berita</h2>
+
+  <div class="chart-container">
+    <h3>Jumlah Berita per Hari (90 hari)</h3>
+    <canvas id="volumeChart"></canvas>
+  </div>
+
+  <div class="chart-container">
+    <h3>Distribusi Kategori (30 hari terakhir)</h3>
+    <canvas id="categoryChart"></canvas>
+  </div>
+
+  <script>
+    fetch('/api/stats/volume').then(r => r.json()).then(data => {
+      const labels = data.map(d => d.date);
+      const counts = data.map(d => d.count);
+
+      new Chart(document.getElementById('volumeChart'), {
+        type: 'line',
+        data: {
+          labels,
+          datasets: [{
+            label: 'Jumlah Berita',
+            data: counts,
+            borderColor: 'blue',
+            backgroundColor: 'rgba(0,0,255,0.1)',
+            tension: 0.3,
+            fill: true
+          }]
+        },
+        options: {
+          responsive: true,
+          scales: { y: { beginAtZero: true } }
+        }
+      });
+    });
+
+    fetch('/api/stats/categories').then(r => r.json()).then(data => {
+      const labels = data.map(d => d.category);
+      const counts = data.map(d => d.count);
+
+      new Chart(document.getElementById('categoryChart'), {
+        type: 'pie',
+        data: {
+          labels,
+          datasets: [{
+            data: counts,
+            backgroundColor: [
+              'red','blue','green','orange','purple',
+              'cyan','pink','yellow','brown','grey'
+            ]
+          }]
+        }
+      });
+    });
+  </script>
+</body>
+</html>
